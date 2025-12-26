@@ -182,8 +182,11 @@ get_harvest <- function(aoi, out_dir) {
   cli::cli_alert_info("Downloading cutblock layers")
   cutblocks <- bcdata::bcdc_query_geodata("b1b647a6-f271-42e0-9cd0-89ec24bce9f7") |>
     bcdata::filter(bcdata::INTERSECTS(aoi)) |>
-    bcdata::select("HARVEST_YEAR", "AREA_HA") |>
+    bcdata::select("HARVEST_START_YEAR_CALENDAR", "AREA_HA") |>
     bcdata::collect()
+ cutblocks <- cutblocks |> dplyr::select(.data$HARVEST_START_YEAR_CALENDAR, .data$AREA_HA) |> 
+    dplyr::rename("HARVEST_YEAR" = .data$HARVEST_START_YEAR_CALENDAR)
+
 
   if (nrow(cutblocks) > 0) {
     cutblocks <- sf::st_intersection(cutblocks, aoi) |>
